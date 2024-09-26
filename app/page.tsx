@@ -35,11 +35,20 @@ export default function Home() {
     
     if (result.error) {
       setErrorMsg(result.error);
+    } else {
+      setErrorMsg("");
     }
 
     if (result.success) {
+      setFormState({
+        name: "",
+        email: "",
+        passwd: "",
+        repasswd: ""
+      });
       setSuccessMsg(result.success);
-      console.log(result.user);
+    } else {
+      setSuccessMsg("");
     }
   };
   return (
