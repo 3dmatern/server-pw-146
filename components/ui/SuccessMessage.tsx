@@ -4,7 +4,7 @@ type Props = {
     message?: string | string[]
 };
 
-export function ErrorMessage({ message }: Props & HTMLAttributes<HTMLParagraphElement>) {
+export function SuccessMessage({ message }: Props & HTMLAttributes<HTMLParagraphElement>) {
     if (!message) return undefined;
     return (
         <p

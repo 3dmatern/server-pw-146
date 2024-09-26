@@ -1,18 +1,20 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 
 import { UiLabel } from "@/components/ui/form/UiLabel";
 import { UiInput } from "@/components/ui/form/UiInput";
 import { UiButton } from "@/components/ui/form/UiButton";
 import { ErrorMessage } from "@/components/ui/ErrorMessage";
+import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 import { RegisterModel } from "@/models/register-model";
+
 import { signUp } from "@/actions/auth";
 
 export default function Home() {
   const [formState, setFormState] = useState<RegisterModel>({
-    login: "",
+    name: "",
     email: "",
     passwd: "",
     repasswd: ""
@@ -20,10 +22,25 @@ export default function Home() {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormState(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const result = await signUp(formState);
-    console.log("Зарегистрирован", result);
+    
+    if (result.error) {
+      setErrorMsg(result.error);
+    }
+
+    if (result.success) {
+      setSuccessMsg(result.success);
+      console.log(result.user);
+    }
   };
   return (
     <main className="py-5 flex flex-col gap-8 row-start-2 items-center sm:items-start">
@@ -36,22 +53,23 @@ export default function Home() {
         <h2 className="mb-5 text-4xl font-bold">Регистрация</h2>
 
         <UiLabel label="Логин">
-          <UiInput type="text" name="login" />
+          <UiInput type="text" name="name" onChange={handleChange} />
         </UiLabel>
 
         <UiLabel label="Email">
-          <UiInput type="email" name="email" />
+          <UiInput type="email" name="email" onChange={handleChange} />
         </UiLabel>
 
         <UiLabel label="Пароль">
-          <UiInput type="password" name="passwd" />
+          <UiInput type="password" name="passwd" onChange={handleChange} />
         </UiLabel>
 
         <UiLabel label="Повторите пароль">
-          <UiInput type="password" name="repasswd" />
+          <UiInput type="password" name="repasswd" onChange={handleChange} />
         </UiLabel>
 
-        <ErrorMessage className="my-3"  />
+        <ErrorMessage className="my-3" message={errorMsg}  />
+        <SuccessMessage className="my-3" message={successMsg}  />
 
         <UiButton type="submit">
           Регистрация
