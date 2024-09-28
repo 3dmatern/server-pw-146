@@ -212,8 +212,8 @@ nano /etc/apache2/sites-available/000-default.conf
     # a2enmod proxy_http
 
     # Статические файлы
-    Alias /_next /path/to/your/nextjs/.next/static
-    <Directory /path/to/your/nextjs/.next/static>
+    Alias /_next /path/to/your/nextjs/.next
+    <Directory /path/to/your/nextjs/.next>
         Require all granted
     </Directory>
 
