@@ -24,7 +24,7 @@ jobs:
               run: |
                 ssh -o StrictHostKeyChecking=no root@31.129.98.7 << 'EOF'
                     export PATH=$PATH:/run/user/0/fnm_multishells/27869_1727528829873/bin
-                    cd ../opt/server-pw-146
+                    cd /opt/server-pw-146
                     git pull origin main
                     npm install
                     npm run build

@@ -30,13 +30,62 @@ lscpu
 если система x64, то ещё устанавливаем:
 ```bash
 dpkg --add-architecture i386
+sudo apt update
 apt install libgcc1:i386 libstdc++6:i386
+sudo apt upgrade
 ```
-<!-- ```bash
-apt-get install libgcc1
-apt-get install libxml2
-``` -->
+```bash
+apt-get install libgcc1 libxml2
+```
+```bash
+export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+```
+```bash
+echo 'export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH' >> ~/.bashrc
+source ~/.bashrc
+```
+```bash
+chmod 755 /lib/x86_64-linux-gnu/libgcc_s.so.1
+chmod 755 /usr/lib/x86_64-linux-gnu/libxml2.so.2
+```
 
+Если права не удается назначить, то выполняем след. шаги:
+получаем чтобы содержалось только 1 имя
+```bash
+cat /etc/hostname
+```
+
+Открываем
+```bash
+nano /etc/hosts
+```
+и добавляем строку `127.0.1.1    полученное_имя_в_предыдущей_команде` в `/etc/hosts`
+должно получится примерно так:
+```
+127.0.0.1    localhost
+127.0.1.1    xkbfpzryvj
+```
+после этого перезапускаем сервер
+```bash
+reboot
+```
+
+снова выдаем права
+```bash
+chmod 755 /lib/x86_64-linux-gnu/libgcc_s.so.1
+chmod 755 /usr/lib/x86_64-linux-gnu/libxml2.so.2
+```
+
+Получаем версию java и устанавливаем переменную окружения:
+```bash
+java -version
+```
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-*-openjdk-amd64
+```
+```bash
+source ~/.bashrc
+```
 ## Узнаем свой ip-адрес
 ```bash
 ifconfig
