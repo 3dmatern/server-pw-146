@@ -14,8 +14,8 @@ apt install mysql-server -y
 java -version
 apt install openjdk-7-jre -y
 php -v
-apt install php -y
-apt install php-mysql -y
+apt install php5 -y
+apt install php5-mysql -y
 apt install phpmyadmin -y
 ```
 
@@ -70,10 +70,23 @@ Include /etc/phpmyadmin/apache.conf
 ```bash
 sudo systemctl restart apache2
 ```
+или
+```bash
+service apache2 restart
+```
 
 ## Инициализировать sql файлы из папки с архивом сервера
 
 ## Подключиться по FTP к серверу и загрузить файлы в корень сервера (не в папку root).
+
+```bash
+sudo nano /etc/ssh/sshd_config
+```
+изменяем `# PermitRootLogin no` на `PermitRootLogin yes`
+
+```bash
+sudo service ssh restart
+```
 
 Дожидаемся загрузки файлов на сервер.
 
@@ -104,7 +117,7 @@ sudo nano /var/www/register.php
 
 5. Выдаем права на папку home
 ```bash
-sudo chmod 777 -R /home/
+sudo chmod 777 /home/chmod.sh
 ```
 далее выполняем скрипт который выдаст ещё нужные права
 ```bash
@@ -117,8 +130,50 @@ sudo nano /etc/apache2/sites-available/000-default.conf
 ```
 заменяем `DocumentRoot /var/www/html` на `DocumentRoot /var/www`
 
+Если работаем с фреймворком, то заменяем или добавляем:
+```
+<VirtualHost *:80>
+    ServerName localhost
+    ServerAlias www.example.com 127.0.0.1
+    ServerAdmin webmaster@localhost
+
+    # Укажите путь к вашему приложению Next.js
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:3000/
+    ProxyPassReverse / http://localhost:3000/
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    # Убедитесь, что модули proxy и proxy_http включены
+    # Для этого выполните следующие команды:
+    # a2enmod proxy
+    # a2enmod proxy_http
+</VirtualHost>
+```
+
+```bash
+sudo systemctl restart apache2
+```
+или
 ```bash
 service apache2 restart
+```
+
+## Если используем Next.js как сайт
+
+```bash
+sudo apt install unzip
+```
+
+```bash
+curl -fsSL https://fnm.vercel.app/install | bash
+```
+```bash
+source ~/.bashrc
+```
+```bash
+fnm use --install-if-missing 20
 ```
 
 ## Запускаем сервер
@@ -134,7 +189,3 @@ service apache2 restart
 ## Обновляем файлы клиента
 - заменяем клиентские файлы из папки с сервером в папке client
 - прописываем ip к серверу в pw/patcher/server/serverlist.txt
-
-
-Порты
-29000-29003 29100 29301-29304 29500 11100-11101
