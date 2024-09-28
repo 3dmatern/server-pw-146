@@ -22,7 +22,7 @@ jobs:
               # в "run" чтобы получить путь для "export" к npm, pm2, pnpm - нужно выполнить
               # команду в консоли сервера, например: which npm
               run: |
-                ssh -o StrictHostKeyChecking=no root@45.12.19.88 << 'EOF'
+                ssh -o StrictHostKeyChecking=no root@31.129.98.7 << 'EOF'
                     export PATH=$PATH:/run/user/0/fnm_multishells/27869_1727528829873/bin
                     cd ../opt/server-pw-146
                     git pull origin main
