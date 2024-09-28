@@ -203,24 +203,27 @@ nano /etc/apache2/sites-available/000-default.conf
 ```
 <VirtualHost *:80>
     ServerName www.example.com
-    ServerAlias www.example.com/test
-    ServerAdmin denismatern@gmail.com
 
     # Убедитесь, что модули proxy и proxy_http включены
     # Для этого выполните следующие команды:
     # a2enmod proxy
     # a2enmod proxy_http
+    # a2enmod headers
 
-    # Статические файлы
-    Alias /_next /path/to/your/nextjs/.next
-    <Directory /path/to/your/nextjs/.next>
+    # Проксирование всех запросов на Next.js
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:3000/
+    ProxyPassReverse / http://localhost:3000/
+
+    # Обслуживание статических файлов
+    Alias /_next /var/www/project_name/.next/server/pages
+    <Directory /var/www/project_name/.next/server/pages>
         Require all granted
     </Directory>
 
-    # Настройка маршрутизации для Next.js
-    ProxyPreserveHost On
-    ProxyPass /register http://localhost:3000/
-    ProxyPassReverse /register http://localhost:3000/
+    # Передача заголовков на backend
+    RequestHeader set Host %{HTTP_HOST}e
+    RequestHeader set X-Real-IP %{REMOTE_ADDR}e
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
