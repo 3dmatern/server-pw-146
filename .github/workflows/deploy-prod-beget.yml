@@ -1,0 +1,32 @@
+name: deploy-prod-next-app-on-beget
+
+on:
+    push:
+        branches: ["main"]
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v4
+
+            # Устанавливаем SSH ключи и хост, для подключения к хостингу
+            - name: Install SSH key
+              uses: shimataro/ssh-key-action@v2
+              with:
+                key: ${{ secrets.SSH_PRIVATE_KEY }}
+                known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+            - name: Deploy via SSH
+              # в "run" чтобы получить путь для "export" к npm, pm2, pnpm - нужно выполнить
+              # команду в консоли сервера, например: which npm
+              run: |
+                ssh -o StrictHostKeyChecking=no root@45.12.19.88 << 'EOF'
+                    export PATH=$PATH:/run/user/0/fnm_multishells/27869_1727528829873/bin
+                    cd ../opt/server-pw-146
+                    git pull origin main
+                    npm install
+                    npm run build
+                    pm2 restart next-app
+                EOF

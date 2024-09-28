@@ -23,6 +23,8 @@ export default function Home() {
   const [successMsg, setSuccessMsg] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setErrorMsg("");
+    setSuccessMsg("");
     setFormState(prev => ({
       ...prev,
       [e.target.name]: e.target.value
@@ -31,12 +33,12 @@ export default function Home() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+      setErrorMsg("");
+      setSuccessMsg("");
     const result = await signUp(formState);
     
     if (result.error) {
       setErrorMsg(result.error);
-    } else {
-      setErrorMsg("");
     }
 
     if (result.success) {
@@ -47,8 +49,6 @@ export default function Home() {
         repasswd: ""
       });
       setSuccessMsg(result.success);
-    } else {
-      setSuccessMsg("");
     }
   };
   return (
@@ -62,19 +62,39 @@ export default function Home() {
         <h2 className="mb-5 text-4xl font-bold">Регистрация</h2>
 
         <UiLabel label="Логин">
-          <UiInput type="text" name="name" onChange={handleChange} />
+          <UiInput
+            type="text"
+            name="name"
+            value={formState.name}
+            onChange={handleChange}
+          />
         </UiLabel>
 
         <UiLabel label="Email">
-          <UiInput type="email" name="email" onChange={handleChange} />
+          <UiInput
+            type="email"
+            name="email"
+            value={formState.email}
+            onChange={handleChange}
+          />
         </UiLabel>
 
         <UiLabel label="Пароль">
-          <UiInput type="password" name="passwd" onChange={handleChange} />
+          <UiInput
+            type="password"
+            name="passwd"
+            value={formState.passwd}
+            onChange={handleChange}
+          />
         </UiLabel>
 
         <UiLabel label="Повторите пароль">
-          <UiInput type="password" name="repasswd" onChange={handleChange} />
+          <UiInput
+            type="password"
+            name="repasswd"
+            value={formState.repasswd}
+            onChange={handleChange}
+          />
         </UiLabel>
 
         <ErrorMessage className="my-3" message={errorMsg}  />

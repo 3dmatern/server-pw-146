@@ -8,35 +8,34 @@ apt-get update && apt-get upgrade -y
 
 2. Устанавливаем необходимые пакеты
 ```bash
-apt install openssh-server -y
-apt install apache2 -y
-apt install mysql-server -y
+apt-get install openssh-server apache2 mysql-server -y
 java -version
-apt install openjdk-7-jre -y
+apt-get install openjdk-7-jre -y
 php -v
-apt install php5 -y
-apt install php5-mysql -y
-apt install phpmyadmin -y
+apt-get install php5 -y
+apt-get install php5-mysql -y
+apt-get install phpmyadmin -y
 ```
 
 2.1 При установки phpmyadmin, появятся диалоговые окна:
 - в первом выбираем: `apache2`;
-- во втором предложит установить конфигурацию, выбираем: `Yes` или `Да`.
+- во втором предложит установить конфигурацию, выбираем: `No` или `Нет`.
+
 
 ## Проверяем разрядность системы
 ```bash
 lscpu
 ```
+
 если система x64, то ещё устанавливаем:
 ```bash
-apt-get install libgtk2.0.0:i386 libpangoxft-1.0.0:i386 gstreamer0.10-pulseaudio:i386 gstreamer0.10-plugins-base:i386 gstreamer0.10-plugins-good:i386
-```
-или
-```bash
 dpkg --add-architecture i386
-apt-get update
-apt-get install ia32-libs
+apt install libgcc1:i386 libstdc++6:i386
 ```
+<!-- ```bash
+apt-get install libgcc1
+apt-get install libxml2
+``` -->
 
 ## Узнаем свой ip-адрес
 ```bash
@@ -46,7 +45,7 @@ ifconfig
 ## Создаем нового пользователя для MySQL чтобы подключаться к БД
 
 ```bash
-sudo mysql -u root -p
+mysql -u root -p
 ```
 
 ```sql
@@ -58,7 +57,7 @@ FLUSH PRIVILEGES;
 
 Откройте файл /etc/apache2/apache2.conf в редакторе nano:
 ```bash
-sudo nano /etc/apache2/apache2.conf
+nano /etc/apache2/apache2.conf
 ```
 
 Добавьте следующую строку в конце файла:
@@ -68,7 +67,7 @@ Include /etc/phpmyadmin/apache.conf
 
 Перезапустите сервис Apache:
 ```bash
-sudo systemctl restart apache2
+systemctl restart apache2
 ```
 или
 ```bash
@@ -79,45 +78,46 @@ service apache2 restart
 
 ## Подключиться по FTP к серверу и загрузить файлы в корень сервера (не в папку root).
 
+если в виртуальной мащине, то изменяем конфигурацию ssh:
 ```bash
-sudo nano /etc/ssh/sshd_config
+nano /etc/ssh/sshd_config
 ```
 изменяем `# PermitRootLogin no` на `PermitRootLogin yes`
 
 ```bash
-sudo service ssh restart
+service ssh restart
 ```
 
-Дожидаемся загрузки файлов на сервер.
+### Дожидаемся загрузки файлов на сервер!
 
 ## Редактируем серверные файлы
 
 1. Редактируем доступ к БД
 ```bash
-sudo nano /etc/table.xml
+nano /etc/table.xml
 ```
 - здесь в строке connection устанавливаем логин и пароль к БД
 
 2. Редактируем gamesys.conf
 ```bash
-sudo nano /home/glinkd/gamesys.conf
+nano /home/glinkd/gamesys.conf
 ```
-
 необходимо установить ip-адрес `0.0.0.0` для всех блоков [GLinkServer#].
 
+(В новых версиях Ubuntu соответственно не работает из-за отсутствия openjdk7-jre)
 3. Редактируем подключение iweb к БД
 ```bash
-sudo nano /usr/local/jakarta/webapps/iweb/include/.config.jsp
+nano /usr/local/jakarta/webapps/iweb/include/.config.jsp
 ```
 
 4. Редактируем подключение скрипта регистрации к БД (там же можно редактировать выдачу голды при регистрации)
 ```bash
-sudo nano /var/www/register.php
+nano /var/www/index.php
 ```
 
 5. Выдаем права на папку home
 ```bash
-sudo chmod 777 /home/chmod.sh
+chmod 777 /home/chmod.sh
 ```
 далее выполняем скрипт который выдаст ещё нужные права
 ```bash
@@ -126,44 +126,14 @@ sudo chmod 777 /home/chmod.sh
 
 6. Меняем путь к файлам сайта
 ```bash
-sudo nano /etc/apache2/sites-available/000-default.conf
+nano /etc/apache2/sites-available/000-default.conf
 ```
 заменяем `DocumentRoot /var/www/html` на `DocumentRoot /var/www`
-
-Если работаем с фреймворком, то заменяем или добавляем:
-```
-<VirtualHost *:80>
-    ServerName localhost
-    ServerAlias www.example.com 127.0.0.1
-    ServerAdmin webmaster@localhost
-
-    # Укажите путь к вашему приложению Next.js
-    ProxyPreserveHost On
-    ProxyPass / http://localhost:3000/
-    ProxyPassReverse / http://localhost:3000/
-
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-
-    # Убедитесь, что модули proxy и proxy_http включены
-    # Для этого выполните следующие команды:
-    # a2enmod proxy
-    # a2enmod proxy_http
-</VirtualHost>
-```
-
-```bash
-sudo systemctl restart apache2
-```
-или
-```bash
-service apache2 restart
-```
 
 ## Если используем Next.js как сайт
 
 ```bash
-sudo apt install unzip
+apt install unzip
 ```
 
 ```bash
@@ -174,6 +144,39 @@ source ~/.bashrc
 ```
 ```bash
 fnm use --install-if-missing 20
+```
+
+Также заменяем или добавляем:
+```bash
+nano /etc/apache2/sites-available/000-default.conf
+```
+
+```
+<VirtualHost *:80>
+    ServerName localhost
+    ServerAlias www.example.com 127.0.0.1
+    ServerAdmin webmaster@localhost
+
+    # Убедитесь, что модули proxy и proxy_http включены
+    # Для этого выполните следующие команды:
+    # a2enmod proxy
+    # a2enmod proxy_http
+
+    # Укажите путь к вашему приложению Next.js
+    ProxyPreserveHost On
+    ProxyPass / http://localhost:3000/
+    ProxyPassReverse / http://localhost:3000/
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+```
+```bash
+systemctl restart apache2
+```
+или в старных версиях ubuntu:
+```bash
+service apache2 restart
 ```
 
 ## Запускаем сервер

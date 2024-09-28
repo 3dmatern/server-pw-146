@@ -46,21 +46,40 @@ export async function signUp(payload: RegisterModel) {
     const base64EncodedPassword = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Hex.parse(md5HashPassword));
     
     try {
-        const newUser = await prisma.users.create({
-            data: {
-                name,
-                email,
-                passwd: base64EncodedPassword,
-                passwd2: base64EncodedPassword,
+        const GOLD = "1000000000"; // кол-во голды на аккаунт
+        // const creatime = new Date().toISOString();
+        await prisma.$executeRaw`
+            CALL adduser(${name}, ${base64EncodedPassword}, '0', '0', '0', '0', ${email}, '0', '0', '0', '0', '0', '0', '0', '', '', ${base64EncodedPassword});
+        `;
+        const newUser = await prisma.users.findUnique({
+            where: {
+                name
+            },
+            select: {
+                ID: true,
+                name: true
             }
         });
+
+        if (!newUser) {
+            return { error: "Ошибка регистрации аккаунта!" };
+        }
+
+        await prisma.$executeRaw`
+            CALL usecash(${newUser.ID}, 1, 0, 1, 0, ${GOLD}, 1, @error)
+        `;
     
         return {
-            success: "Регистрация прошла успешно!",
+            success: `
+                Аккаунт ${newUser.name} Успешно зарегистрирован :)
+                Ваш ID: ${newUser.ID}
+                ${GOLD} голда начислено.
+                Голд придет в течении 5-10 минут
+            `,
             user: newUser
         };
     } catch (error) {
         console.error("Error auth register user", error);
-        return { error: "Ошибка регистрации аккаунта!"}
+        return { error: "Что-то пошло не так! Попробуйте позже."}
     }
 };
