@@ -23,10 +23,10 @@ jobs:
               # команду в консоли сервера, например: which npm
               run: |
                 ssh -o StrictHostKeyChecking=no root@31.129.98.7 << 'EOF'
-                    export PATH=$PATH:/run/user/0/fnm_multishells/2904_1727548111514/bin
-                    cd ../opt/server-pw-146
+                    cd /opt/server-pw-146
                     git pull origin main
                     npm install
-                    npm run build
-                    pm2 start next-app
+                    npm run build || { echo "Build failed"; exit 1; }
+                    pm2 restart next-app || { echo "PM2 failed to restart"; exit 1; }
+                    pm2 logs next-app  # Optional: View logs for further debugging
                 EOF
