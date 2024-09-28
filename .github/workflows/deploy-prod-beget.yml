@@ -27,7 +27,7 @@ jobs:
                     cd /opt/server-pw-146
                     git pull origin main
                     npm install
-                    npm run build || { echo "Build failed"; exit 1; }
-                    pm2 restart next-app || { echo "PM2 failed to restart"; exit 1; }
-                    pm2 logs next-app  # Optional: View logs for further debugging
+                    npm run build
+                    pm2 restart next-app
+                    pm2 logs next-app
                 EOF
