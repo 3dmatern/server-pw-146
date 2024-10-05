@@ -1,5 +1,14 @@
 ### Установка сервера Perfect World (любой сервер) на Ubuntu
 
+## Изменяем пароль от root и логинимся под ним
+
+```bash
+sudo passwd root
+```
+```bash
+su root
+```
+
 ## Установка всех зависимостей
 1. Обновление пакетов Ubuntu
 ```bash
@@ -11,9 +20,9 @@ apt-get update && apt-get upgrade -y
 apt-get install openssh-server apache2 mysql-server -y
 java -version
 apt-get install openjdk-7-jre -y
-php -v
-apt-get install php5 -y
-apt-get install php5-mysql -y
+apt-get install php -y
+apt-get install php-mysql -y
+apt-get install libapache2-mod-php php-mbstring php-zip php-gd php-json php-curl -y
 apt-get install phpmyadmin -y
 ```
 
@@ -35,7 +44,7 @@ apt install libgcc1:i386 libstdc++6:i386
 sudo apt upgrade
 ```
 ```bash
-apt-get install libgcc1 libxml2
+sudo apt install zlib1g:i386 libxml2:i386
 ```
 ```bash
 export LD_LIBRARY_PATH=/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
@@ -90,6 +99,9 @@ source ~/.bashrc
 ```bash
 ifconfig
 ```
+```bash
+ip addr show
+```
 
 ## Создаем нового пользователя для MySQL чтобы подключаться к БД
 
@@ -127,7 +139,7 @@ service apache2 restart
 
 ## Подключиться по FTP к серверу и загрузить файлы в корень сервера (не в папку root).
 
-если в виртуальной мащине, то изменяем конфигурацию ssh:
+если в виртуальной машине, то изменяем конфигурацию ssh:
 ```bash
 nano /etc/ssh/sshd_config
 ```
