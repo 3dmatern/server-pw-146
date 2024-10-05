@@ -39,7 +39,7 @@ export async function signUp(prevState: any, formData: FormData) {
             return { error: "Логин должен содержать не менее 4 и не более 10 символов."}
         }
         
-        // Проверка существования пользователя
+        // Проверка существования аккаунта
         const useUsersQuery = "SELECT * FROM users WHERE name = ? OR email = ? LIMIT 1";
         const [findUniqueUserRows] = await connection.execute<RowDataPacket[] & User[]>(useUsersQuery, [name, email]);
         console.log("44", findUniqueUserRows);
@@ -53,7 +53,7 @@ export async function signUp(prevState: any, formData: FormData) {
     
         const GOLD = "1000000000"; // Количество золота
 
-        // Добавляем пользователя
+        // Добавляем аккаунт
         const useAddUserQuery = "CALL adduser(?, ?, '0', '0', '0', '0', ?, '0', '0', '0', '0', '0', '0', '0', '', '', ?)";
         const [addUserResults] = await connection.execute<ResultSetHeader>(
             useAddUserQuery,
@@ -64,7 +64,7 @@ export async function signUp(prevState: any, formData: FormData) {
             return { error: "Ошибка регистрации аккаунта!" };
         }
 
-        // Получаем ID пользователя
+        // Получаем ID аккаунта
         const [userIdResults] = await connection.execute<RowDataPacket[] & User[]>(
             "SELECT * FROM users WHERE name = ?",
             [name]
@@ -82,7 +82,7 @@ export async function signUp(prevState: any, formData: FormData) {
             success: `Аккаунт ${name} успешно зарегистрирован. Ваш ID: ${ID}. ${GOLD} золота начислено.`
         };
     } catch (error) {
-        console.error("Ошибка при регистрации пользователя:", error);
+        console.error("Ошибка при регистрации аккаунта:", error);
         return { error: "Что-то пошло не так! Попробуйте позже."}
     } finally {
         // Возвращаем соединение в пул
