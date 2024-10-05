@@ -9,6 +9,7 @@ import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import { SuccessMessage } from "@/components/ui/SuccessMessage";
 
 import { signUp } from "@/actions/auth/register";
+import { useEffect, useRef } from "react";
 
 // import { RegisterModel } from "@/models/register-model";
 
@@ -19,10 +20,18 @@ const initialState = {
 
 export default function Home() {
   const [state, formAction] = useFormState(signUp, initialState);
+  const formRef = useRef<HTMLFormElement | null>(null);
+
+  useEffect(() => {
+    if (state.success) {
+      formRef.current?.reset();
+    }
+  }, [state.success]);
 
   return (
     <main className="py-5 flex flex-col gap-8 row-start-2 items-center sm:items-start">
       <form
+        ref={formRef}
         className="
           max-w-96 w-full mx-auto flex flex-col items-center gap-2 shadow-sm
         "
@@ -57,8 +66,8 @@ export default function Home() {
           />
         </UiLabel>
 
-        <ErrorMessage className="my-3" message={state.error}  />
-        <SuccessMessage className="my-3" message={state.success}  />
+        <ErrorMessage className="my-3" message={state?.error}  />
+        <SuccessMessage className="my-3" message={state?.success}  />
 
         <UiButton formAction={formAction}>
           Регистрация

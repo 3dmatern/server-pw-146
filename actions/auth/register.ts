@@ -1,92 +1,92 @@
 "use server";
 
 import CryptoJS from "crypto-js";
-import prisma from "@/lib/prisma";
+import type { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
-// import { RegisterModel } from "@/models/register-model";
+import dbPool from "@/lib/db-pool";
+import type { User } from '@/models/user-model';
 
 export async function signUp(prevState: any, formData: FormData) {
-    const name = formData.get("name");
-    const email = formData.get("email");
-    const passwd = formData.get("passwd");
-    const repasswd = formData.get("repasswd");
+    let connection;
+    try {
+        connection = await dbPool.getConnection();
+        console.log("Подключились к БД");
 
-    if (
-        !name?.toString().trim() ||
-        !email?.toString().trim() ||
-        !passwd?.toString().trim() ||
-        !repasswd?.toString().trim()
-    ) {
-        return { error: "Заполните все поля!" };
-    }
+        const name = formData.get("name");
+        const email = formData.get("email");
+        const passwd = formData.get("passwd");
+        const repasswd = formData.get("repasswd");
 
-    if (RegExp(/^0-9a-zA-Z_-/).test(name.toString())) {
-        return { error: "Не верный формат логина" };
-    } else if (RegExp(/^0-9a-zA-Z_-/).test(passwd.toString())) {
-        return { error: "Не верный формат пароля" };
-    } else if (passwd !== repasswd) {
-        return { error: "Пароди не совпадают" };
-    } else if (RegExp(/^[a-z][0-9_]*(\.[a-z0-9_-]+)*@([0-9a-z]*\.)+([a-z]{2,4})$/).test(email.toString())) {
-        return { error: "Введите корректный email" };
-    } else if (name?.toString().length < 4 || name?.toString().length > 10) {
-        return { error: "Логин должен содержать не менее 4 и не более 10 символов."}
-    } else {
-        const isUser = await prisma.users.findFirst({
-            where: {
-                OR: [
-                    {
-                        name: { contains: name.toString() }
-                    },
-                    {
-                        email: { contains: email.toString() }
-                    }
-                ]
-            }
-        });
-        if (isUser) {
+        // Валидация данных
+        if (
+            !name?.toString().trim() ||
+            !email?.toString().trim() ||
+            !passwd?.toString().trim() ||
+            !repasswd?.toString().trim()
+        ) {
+            return { error: "Заполните все поля!" };
+        }
+
+        if (RegExp(/^0-9a-zA-Z_-/).test(name.toString())) {
+            return { error: "Не верный формат логина" };
+        } else if (RegExp(/^0-9a-zA-Z_-/).test(passwd.toString())) {
+            return { error: "Не верный формат пароля" };
+        } else if (passwd !== repasswd) {
+            return { error: "Пароди не совпадают" };
+        } else if (RegExp(/^[a-z][0-9_]*(\.[a-z0-9_-]+)*@([0-9a-z]*\.)+([a-z]{2,4})$/).test(email.toString())) {
+            return { error: "Введите корректный email" };
+        } else if (name?.toString().length < 4 || name?.toString().length > 10) {
+            return { error: "Логин должен содержать не менее 4 и не более 10 символов."}
+        }
+        
+        // Проверка существования пользователя
+        const useUsersQuery = "SELECT * FROM users WHERE name = ? OR email = ? LIMIT 1";
+        const [findUniqueUserRows] = await connection.execute<RowDataPacket[] & User[]>(useUsersQuery, [name, email]);
+        console.log("44", findUniqueUserRows);
+        if (findUniqueUserRows.length > 0) {
             return { error: "Такой логин или еmail уже существуют" };
         }
-    }
 
-    // Вычисляем MD5 хэш пароля
-    const md5HashPassword = CryptoJS.MD5(passwd.toString()).toString();
-    // Кодируем полученный MD5 хэш в формат Base64
-    const base64EncodedPassword = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Hex.parse(md5HashPassword));
+        // Вычисляем MD5 хэш пароля и кодируем в Base64
+        const md5HashPassword = CryptoJS.MD5(passwd.toString()).toString();
+        const base64EncodedPassword = CryptoJS.enc.Base64.stringify(CryptoJS.enc.Hex.parse(md5HashPassword));
     
-    try {
-        const GOLD = "1000000000"; // кол-во голды на аккаунт
-        await prisma.$executeRaw`
-            CALL adduser(${name.toString()}, ${base64EncodedPassword}, '0', '0', '0', '0', ${email}, '0', '0', '0', '0', '0', '0', '0', '', '', ${base64EncodedPassword});
-        `;
-        const newUser = await prisma.users.findUnique({
-            where: {
-                name: name.toString()
-            },
-            select: {
-                ID: true,
-                name: true
-            }
-        });
+        const GOLD = "1000000000"; // Количество золота
 
-        if (!newUser) {
+        // Добавляем пользователя
+        const useAddUserQuery = "CALL adduser(?, ?, '0', '0', '0', '0', ?, '0', '0', '0', '0', '0', '0', '0', '', '', ?)";
+        const [addUserResults] = await connection.execute<ResultSetHeader>(
+            useAddUserQuery,
+            [name, base64EncodedPassword, email, base64EncodedPassword]
+        );
+        console.log("60", addUserResults);
+        if (addUserResults.affectedRows !== 1) {
             return { error: "Ошибка регистрации аккаунта!" };
         }
 
-        await prisma.$executeRaw`
-            CALL usecash(${newUser.ID}, 1, 0, 1, 0, ${GOLD}, 1, @error)
-        `;
-    
-        formData.set("name", "");
+        // Получаем ID пользователя
+        const [userIdResults] = await connection.execute<RowDataPacket[] & User[]>(
+            "SELECT * FROM users WHERE name = ?",
+            [name]
+        );
+        console.log("70", userIdResults);
+        const { ID } = userIdResults[0];
+
+        // Начисляем голду
+        await connection.execute(
+            "CALL usecash(?, 1, 0, 1, 0, ?, 1, @error)",
+            [ID, GOLD]
+        );
+        // Возвращаем успех
         return {
-            success: `
-                Аккаунт ${newUser.name} Успешно зарегистрирован :)
-                Ваш ID: ${newUser.ID}
-                ${GOLD} голда начислено.
-                Голд придет в течении 5-10 минут
-            `
+            success: `Аккаунт ${name} успешно зарегистрирован. Ваш ID: ${ID}. ${GOLD} золота начислено.`
         };
     } catch (error) {
-        console.error("Error auth register user", error);
+        console.error("Ошибка при регистрации пользователя:", error);
         return { error: "Что-то пошло не так! Попробуйте позже."}
+    } finally {
+        // Возвращаем соединение в пул
+        if (connection) connection.release()
+        console.log("Отключились от БД.");
     }
 };
