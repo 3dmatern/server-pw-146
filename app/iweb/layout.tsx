@@ -3,5 +3,9 @@ export default function IwebLayout({
 }: {
     children: React.ReactNode
 }) {
-    return children;
+    return (
+        <main className="container mx-auto py-5">
+            {children}
+        </main>
+    );
 };
