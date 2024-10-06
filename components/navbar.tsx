@@ -13,7 +13,7 @@ export function Navbar() {
   };
 
   return (
-    <nav className="container px-4 flex items-center justify-between gap-4 md:px-0">
+    <nav className="container px-4 flex items-center justify-between gap-4">
       <NavLink
         className="uppercase"
         href="/"

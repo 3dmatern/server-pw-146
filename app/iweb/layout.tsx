@@ -13,7 +13,7 @@ export default function IwebLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="pt-5 px-4 flex flex-col items-center gap-5 md:px-0">
+        <div className="pt-5 flex flex-col items-center gap-5">
             <IwebNav />
 
             <main className="container mx-auto py-5">

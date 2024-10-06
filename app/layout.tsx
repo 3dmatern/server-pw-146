@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="ru">
       <body
         className={`
-          pt-14
+          pt-14 px-4
           ${geistSans.variable} ${geistMono.variable} antialiased
         `}
       >

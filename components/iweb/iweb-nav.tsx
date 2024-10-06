@@ -11,7 +11,7 @@ export function IwebNav() {
   ];
 
   return (
-    <div className="w-full flex flex-wrap gap-3">
+    <div className="container w-full mx-auto px-4 flex flex-wrap gap-3 md:px-0">
       {LINKS.map(link => (
         <NavLink key={link.href} variant="button" href={link.href}>
           {link.name}

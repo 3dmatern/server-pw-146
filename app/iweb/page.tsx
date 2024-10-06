@@ -3,7 +3,7 @@ import { IwebAccountsGMForm } from "@/components/iweb/accounts/iweb-accounts-gm-
 
 export default function IwebHome() {
   return (
-    <div className="flex flex-wrap items-start justify-center gap-3">
+    <div className="flex flex-col items-start justify-center gap-3 md:flex-row">
       <IwebAccountsCard
         title="Игровой GM"
       >

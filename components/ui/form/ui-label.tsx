@@ -20,7 +20,14 @@ export function UiLabel({
             )}
             {...rest}
         >
-          {label ? <span>{label}</span> : children}
+          {
+            label ?
+              <>
+                <span>{label}</span>
+                {children}
+              </> :
+              children
+            }
         </label>
     );
 };

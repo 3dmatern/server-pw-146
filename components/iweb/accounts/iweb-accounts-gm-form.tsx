@@ -69,7 +69,7 @@ export function IwebAccountsGMForm() {
 
         <UiInput
           id="ident"
-          className="w-1/2 p-1 px-1.5"
+          className="w-1/2 p-1 px-1.5 text-center"
           onChange={handleChange}
         />
       </IwebAccountsContainerField>
@@ -81,7 +81,7 @@ export function IwebAccountsGMForm() {
 
         <UiInput
           id="truename"
-          className="w-1/2 p-1 px-1.5"
+          className="w-1/2 p-1 px-1.5 text-center"
           onChange={handleChange}
         />
       </IwebAccountsContainerField>
@@ -105,7 +105,6 @@ export function IwebAccountsGMForm() {
 
       <UiButton
         className="w-fit mx-auto mt-1 py-1 px-4"
-        type="button"
         formAction={formAction}
       >
         Принять

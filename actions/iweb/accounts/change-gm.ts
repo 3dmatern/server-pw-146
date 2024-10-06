@@ -29,7 +29,7 @@ export async function changeGM(prevState: any, formData: FormData) {
     }
 
     const [findUniqueUserRows] = await connection.execute<RowDataPacket[] & DBUserModel[]>(query, [ident]);
-    console.log("31", findUniqueUserRows);
+    console.log("32", findUniqueUserRows);
     if (findUniqueUserRows.length <= 0) {
       return { error: "Такого аккаунта не существует." };
     }
@@ -38,10 +38,12 @@ export async function changeGM(prevState: any, formData: FormData) {
     const userId = findUniqueUserRows[0].ID;
     const useGMQuery = `SELECT userid FROM auth WHERE userid = ?`;
     const [authGMRows] = await connection.execute<RowDataPacket[] & DBAuthModel[]>(useGMQuery, [userId]);
+    console.log("41", authGMRows);
     if (authGMRows.length > 0) {
       if (act === "delete") {
         const useDeleteGmQuery = "DELETE FROM auth WHERE userid = ?";
         const [deleteGMResults] = await connection.execute<ResultSetHeader>(useDeleteGmQuery, [ident]);
+        console.log("46", deleteGMResults);
         if (deleteGMResults.affectedRows > 0) {
           return { success: "Права GM сняты с аккаунта." };
         }
@@ -52,6 +54,7 @@ export async function changeGM(prevState: any, formData: FormData) {
     } else {
       const useAddGMQuery = "CALL addGM(?, '1')";
       const [addGMResults] = await connection.execute<ResultSetHeader>(useAddGMQuery, userId);
+      console.log("57", addGMResults);
       if (addGMResults.affectedRows > 0) {
         return { success: "Права GM выданы аккаунту." };
       }
