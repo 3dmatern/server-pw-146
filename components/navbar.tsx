@@ -2,8 +2,8 @@
 
 
 import { useRouter } from "next/navigation";
-import { UiButton } from "./ui/form/UiButton";
-import { NavLink } from "./ui/NavLink";
+import { UiButton } from "./ui/form/ui-button";
+import { NavLink } from "./ui/nav-link";
 
 export function Navbar() {
   const router = useRouter();
@@ -23,7 +23,7 @@ export function Navbar() {
 
       <div className="flex items-center justify-center gap-4">
         <NavLink href="/iweb">
-          Iweb
+          IWEB
         </NavLink>
       </div>
 

@@ -3,11 +3,11 @@
 import { useEffect, useRef } from "react";
 import { useFormState } from "react-dom";
 
-import { UiLabel } from "@/components/ui/form/UiLabel";
-import { UiInput } from "@/components/ui/form/UiInput";
-import { UiButton } from "@/components/ui/form/UiButton";
-import { ErrorMessage } from "@/components/ui/ErrorMessage";
-import { SuccessMessage } from "@/components/ui/SuccessMessage";
+import { UiLabel } from "@/components/ui/form/ui-label";
+import { UiInput } from "@/components/ui/form/ui-input";
+import { UiButton } from "@/components/ui/form/ui-button";
+import { ErrorMessage } from "@/components/ui/error-message";
+import { SuccessMessage } from "@/components/ui/success-message";
 
 import { signUp } from "@/actions/auth/register";
 

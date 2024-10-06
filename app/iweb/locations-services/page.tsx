@@ -1,5 +1,5 @@
 export default function IwebHome() {
     return (
-        <div>Iweb | Аккаунты</div>
+        <div>Iweb | Локации и Службы</div>
     );
 };
