@@ -16,6 +16,10 @@ import { SuccessMessage } from "@/components/ui/success-message";
 
 import { IwebAccountsContainerField } from "@/components/iweb/accounts/iweb-accounts-container-field";
 
+type Props = {
+  onUpdateGMs: () => void;
+};
+
 const ACTIONS = [
   { value: "add", name: "Дать GM" },
   { value: "delete", name: "Убрать GM" },
@@ -32,7 +36,7 @@ const initialStateForm = {
   act: "add"
 };
 
-export function IwebAccountsGMForm() {
+export function IwebAccountsGMForm({ onUpdateGMs }: Props) {
   const [state, formAction] = useFormState(changeGM, initialStateErrors);
   const [formState, setFormState] = useState(initialStateForm);
   const [errorMsg, setErrorMsg] = useState("");
@@ -45,10 +49,13 @@ export function IwebAccountsGMForm() {
     }))
   };
 
-
   useEffect(() => {
     setErrorMsg(state?.error || "");
     setSuccessMsg(state?.success || "");
+
+    if (state?.success) {
+      onUpdateGMs();
+    }
 
     if (state?.error || state?.success) {
       setFormState(initialStateForm);
@@ -72,6 +79,7 @@ export function IwebAccountsGMForm() {
           id="type"
           className="w-1/2"
           name="type"
+          value={formState.type}
           options={SEARCH_TYPE}
           onChange={handleChange}
         />
@@ -116,6 +124,7 @@ export function IwebAccountsGMForm() {
           id="act"
           className="w-1/2"
           name="act"
+          value={formState.act}
           options={ACTIONS}
           onChange={handleChange}
         />
