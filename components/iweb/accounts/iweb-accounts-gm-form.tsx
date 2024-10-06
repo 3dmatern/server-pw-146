@@ -17,7 +17,7 @@ import { IwebAccountsContainerField } from "@/components/iweb/accounts/iweb-acco
 
 const GM_TYPES = [
   { value: "id", name: "ID" },
-  { value: "login", name: "Login" },
+  { value: "name", name: "Login" },
 ];
 const ACTIONS = [
   { value: "add", name: "Дать GM" },
@@ -70,6 +70,8 @@ export function IwebAccountsGMForm() {
         <UiInput
           id="ident"
           className="w-1/2 p-1 px-1.5 text-center"
+          name="ident"
+          value={formState.ident}
           onChange={handleChange}
         />
       </IwebAccountsContainerField>
@@ -82,6 +84,8 @@ export function IwebAccountsGMForm() {
         <UiInput
           id="truename"
           className="w-1/2 p-1 px-1.5 text-center"
+          name="truename"
+          value={formState.truename}
           onChange={handleChange}
         />
       </IwebAccountsContainerField>
