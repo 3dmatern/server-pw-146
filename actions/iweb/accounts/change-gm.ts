@@ -10,13 +10,11 @@ export async function changeGM(prevState: any, formData: FormData) {
   let connection;
   try {
     connection = await dbPool.getConnection();
-    console.log("Подключились к БД.");
     
     const type = formData.get("type")?.toString().trim();
     const ident = formData.get("ident")?.toString().trim();
     const truename = formData.get("truename")?.toString().trim();
     const act = formData.get("act")?.toString().trim();
-    console.log({ type, ident, truename, act });
 
     if (!type || !ident || !act) {
       return { error: "Указаны не все параметры." };
@@ -30,23 +28,19 @@ export async function changeGM(prevState: any, formData: FormData) {
     }
 
     const [findUniqueUserRows] = await connection.execute<RowDataPacket[] & DBUserModel[]>(query, [ident]);
-    console.log("32", findUniqueUserRows);
     if (findUniqueUserRows.length <= 0) {
       return { error: "Такого аккаунта не существует." };
     }
 
     // Поиск уже существующих прав GM
     const userId = findUniqueUserRows[0].ID;
-    console.log("39", userId);
     const useGMQuery = `SELECT userid FROM auth WHERE userid = ?`;
     const [authGMRows] = await connection.execute<RowDataPacket[] & DBAuthModel[]>(useGMQuery, [userId]);
-    console.log("41", authGMRows);
     if (authGMRows.length > 0) {
       if (act === "delete") {
       // Удаляем права GM
         const useDeleteGmQuery = "DELETE FROM auth WHERE userid = ?";
         const [deleteGMResults] = await connection.execute<ResultSetHeader>(useDeleteGmQuery, [userId]);
-        console.log("46", deleteGMResults);
         if (deleteGMResults.affectedRows > 0) {
           return { success: "Права GM сняты с аккаунта." };
         }
@@ -67,7 +61,6 @@ export async function changeGM(prevState: any, formData: FormData) {
       if (act === "add") {
         const useAddGMQuery = "CALL addGM(?, '1')";
         const [addGMResults] = await connection.execute<ResultSetHeader>(useAddGMQuery, [userId]);
-        console.log("63", addGMResults);
         if (addGMResults.serverStatus === 2) {
           return { success: "Права GM выданы аккаунту." };
         }
@@ -79,6 +72,5 @@ export async function changeGM(prevState: any, formData: FormData) {
   } finally {
     // Возвращаем соединение в пул
     if (connection) connection.release()
-    console.log("Отключились от БД.");
   }
 };

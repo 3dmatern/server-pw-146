@@ -10,7 +10,6 @@ export async function signUp(prevState: any, formData: FormData) {
   let connection;
   try {
     connection = await dbPool.getConnection();
-    console.log("Подключились к БД");
 
     const name = formData.get("name")?.toString().trim();
     const email = formData.get("email")?.toString().trim();
@@ -37,7 +36,6 @@ export async function signUp(prevState: any, formData: FormData) {
     // Проверка существования аккаунта
     const useUsersQuery = "SELECT * FROM users WHERE name = ? OR email = ? LIMIT 1";
     const [findUniqueUserRows] = await connection.execute<RowDataPacket[] & DBUserModel[]>(useUsersQuery, [name, email]);
-    console.log("44", findUniqueUserRows);
     if (findUniqueUserRows.length > 0) {
       return { error: "Такой логин или еmail уже существуют" };
     }
@@ -54,7 +52,6 @@ export async function signUp(prevState: any, formData: FormData) {
       useAddUserQuery,
       [name, base64EncodedPassword, email, base64EncodedPassword]
     );
-    console.log("60", addUserResults);
     if (addUserResults.affectedRows !== 1) {
       return { error: "Ошибка регистрации аккаунта!" };
     }
@@ -64,7 +61,6 @@ export async function signUp(prevState: any, formData: FormData) {
       "SELECT * FROM users WHERE name = ?",
       [name]
     );
-    console.log("70", userIdResults);
     const { ID } = userIdResults[0];
 
     // Начисляем голду
@@ -82,6 +78,5 @@ export async function signUp(prevState: any, formData: FormData) {
   } finally {
     // Возвращаем соединение в пул
     if (connection) connection.release()
-    console.log("Отключились от БД.");
   }
 };
