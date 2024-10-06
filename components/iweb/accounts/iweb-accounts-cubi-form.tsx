@@ -3,7 +3,7 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 
-import { changeGM } from "@/actions/iweb/accounts/change-gm";
+import { addCubi } from "@/actions/iweb/accounts/add-cubi";
 import { SEARCH_TYPE } from "@/lib/constants";
 
 import { UiLabel } from "@/components/ui/form/ui-label";
@@ -16,11 +16,6 @@ import { SuccessMessage } from "@/components/ui/success-message";
 
 import { IwebAccountsContainerField } from "@/components/iweb/accounts/iweb-accounts-container-field";
 
-const ACTIONS = [
-  { value: "add", name: "Дать GM" },
-  { value: "delete", name: "Убрать GM" },
-];
-
 const initialStateErrors = {
   error: "",
   success: undefined
@@ -28,12 +23,11 @@ const initialStateErrors = {
 const initialStateForm = {
   type: "id",
   ident: "",
-  truename: "",
-  act: "add"
+  amount: ""
 };
 
-export function IwebAccountsGMForm() {
-  const [state, formAction] = useFormState(changeGM, initialStateErrors);
+export function IwebAccountsCubiForm() {
+  const [state, formAction] = useFormState(addCubi, initialStateErrors);
   const [formState, setFormState] = useState(initialStateForm);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -44,7 +38,6 @@ export function IwebAccountsGMForm() {
       [e.target.name]: e.target.value
     }))
   };
-
 
   useEffect(() => {
     setErrorMsg(state?.error || "");
@@ -94,29 +87,18 @@ export function IwebAccountsGMForm() {
       </IwebAccountsContainerField>
 
       <IwebAccountsContainerField>
-        <UiLabel htmlFor="truename" className="w-1/2">
-          Имя персонажа:
+        <UiLabel htmlFor="amount" className="w-1/2">
+          Количество:
         </UiLabel>
 
         <UiInput
-          id="truename"
+          id="amount"
           className="w-1/2 p-1 px-1.5 text-center"
-          name="truename"
-          value={formState.truename}
-          onChange={handleChange}
-        />
-      </IwebAccountsContainerField>
-
-      <IwebAccountsContainerField>
-        <UiLabel htmlFor="act" className="w-1/2">
-          Действие:
-        </UiLabel>
-
-        <UiSelect
-          id="act"
-          className="w-1/2"
-          name="act"
-          options={ACTIONS}
+          type="number"
+          min={0}
+          max={999999999}
+          name="amount"
+          value={formState.amount}
           onChange={handleChange}
         />
       </IwebAccountsContainerField>
@@ -128,7 +110,7 @@ export function IwebAccountsGMForm() {
         className="w-fit mx-auto mt-1 py-1 px-4"
         formAction={formAction}
       >
-        Применить
+        Начислить
       </UiButton>
     </form>
   );

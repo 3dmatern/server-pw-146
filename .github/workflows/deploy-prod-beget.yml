@@ -1,32 +1,32 @@
-# name: deploy-prod-next-app-on-beget
+name: deploy-prod-next-app-on-beget
 
-# on:
-#     push:
-#         branches: ["main"]
+on:
+    push:
+        branches: ["main"]
 
-# jobs:
-#     deploy:
-#         runs-on: ubuntu-latest
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
 
-#         steps:
-#             - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-#             # Устанавливаем SSH ключи и хост, для подключения к хостингу
-#             - name: Install SSH key
-#               uses: shimataro/ssh-key-action@v2
-#               with:
-#                 key: ${{ secrets.SSH_PRIVATE_KEY }}
-#                 known_hosts: ${{ secrets.KNOWN_HOSTS }}
+            # Устанавливаем SSH ключи и хост, для подключения к хостингу
+            # - name: Install SSH key
+            #   uses: shimataro/ssh-key-action@v2
+            #   with:
+            #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+            #     known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-#             - name: Deploy via SSH
-#               # в "run" чтобы получить путь для "export" к npm, pm2, pnpm - нужно выполнить
-#               # команду в консоли сервера, например: which npm
-#               run: |
-#                 ssh -o StrictHostKeyChecking=no root@31.129.98.7 << 'EOF'
-#                     export PATH=$PATH:/run/user/0/fnm_multishells/2904_1727548111514/bin
-#                     cd /opt/server-pw-146
-#                     git pull origin main
-#                     npm install
-#                     npm run build
-#                     pm2 start
-#                 EOF
+            # - name: Deploy via SSH
+            #   # в "run" чтобы получить путь для "export" к npm, pm2, pnpm - нужно выполнить
+            #   # команду в консоли сервера, например: which npm
+            #   run: |
+            #     ssh -o StrictHostKeyChecking=no root@31.129.98.7 << 'EOF'
+            #         export PATH=$PATH:/run/user/0/fnm_multishells/2904_1727548111514/bin
+            #         cd /opt/server-pw-146
+            #         git pull origin main
+            #         npm install
+            #         npm run build
+            #         pm2 start
+            #     EOF

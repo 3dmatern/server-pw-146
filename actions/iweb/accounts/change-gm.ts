@@ -8,9 +8,8 @@ import { DBAuthModel } from "@/models/db-auth-model";
 
 export async function changeGM(prevState: any, formData: FormData) {
   let connection;
-  try {
-    connection = await dbPool.getConnection();
-    
+
+  try {    
     const type = formData.get("type")?.toString().trim();
     const ident = formData.get("ident")?.toString().trim();
     const truename = formData.get("truename")?.toString().trim();
@@ -20,14 +19,16 @@ export async function changeGM(prevState: any, formData: FormData) {
       return { error: "Указаны не все параметры." };
     }
 
-    let query = "";
-    if (type === "id") {
-      query = "SELECT ID FROM users WHERE ID = ?";
-    } else {
-      query = "SELECT ID FROM users WHERE name = ?";
-    }
+    // Подключаемся к БД
+    connection = await dbPool.getConnection();
 
-    const [findUniqueUserRows] = await connection.execute<RowDataPacket[] & DBUserModel[]>(query, [ident]);
+    let useUniqueUserQuery = "";
+    if (type === "id") {
+      useUniqueUserQuery = "SELECT ID FROM users WHERE ID = ?";
+    } else {
+      useUniqueUserQuery = "SELECT ID FROM users WHERE name = ?";
+    }
+    const [findUniqueUserRows] = await connection.execute<RowDataPacket[] & DBUserModel[]>(useUniqueUserQuery, [ident]);
     if (findUniqueUserRows.length <= 0) {
       return { error: "Такого аккаунта не существует." };
     }
@@ -59,8 +60,8 @@ export async function changeGM(prevState: any, formData: FormData) {
 
       // Выдаём права GM
       if (act === "add") {
-        const useAddGMQuery = "CALL addGM(?, '1')";
-        const [addGMResults] = await connection.execute<ResultSetHeader>(useAddGMQuery, [userId]);
+        const useAddGMCall = "CALL addGM(?, '1')";
+        const [addGMResults] = await connection.execute<ResultSetHeader>(useAddGMCall, [userId]);
         if (addGMResults.serverStatus === 2) {
           return { success: "Права GM выданы аккаунту." };
         }
@@ -68,9 +69,9 @@ export async function changeGM(prevState: any, formData: FormData) {
     }
   } catch (error) {
     console.error("Ошибка при выдаче прав GM:", error);
-    return { error: "Что-то пошло не так! Попробуйте позже."}
+    return { error: "Что-то пошло не так! Попробуйте позже."};
   } finally {
     // Возвращаем соединение в пул
-    if (connection) connection.release()
+    if (connection) connection.release();
   }
 };
