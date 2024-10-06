@@ -9,7 +9,7 @@ type Props = {
 
 export function IwebAccountsList({ data }: Props) {
   return(
-    <div className="mt-4 flex flex-col gap-2 text-sm">
+    <div className="py-4 flex flex-col gap-2 text-sm">
       <div
         className="
           py-2 flex items-center justify-between gap-1 text-center

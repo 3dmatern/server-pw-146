@@ -10,15 +10,12 @@ export async function accountsList() {
     connection = await dbPool.getConnection();
     // @ts-ignore
     const [authGMRows] = await connection.execute<{ userid: number }[]>("SELECT DISTINCT userid FROM auth");
-    console.log("11", authGMRows);
-    
     // @ts-ignore
     const [accountsRows] = await connection.execute<AccountsListModel[]>(
       "SELECT ID, name, creatime FROM users"
     );
-    console.log("22", accountsRows);
-    
     const accounts = [] as AccountsListDetailModel[];
+
     accountsRows.forEach(account => {
       if (authGMRows.some(gm => gm.userid === account.ID)) {
         accounts.push({ ...account, gm: true });
@@ -26,7 +23,6 @@ export async function accountsList() {
         accounts.push({ ...account, gm: false });
       }
     });
-    console.log(accounts);
 
     return { success: accounts };
   } catch (error) {

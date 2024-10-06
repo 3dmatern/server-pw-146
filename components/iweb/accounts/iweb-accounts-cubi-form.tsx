@@ -65,6 +65,7 @@ export function IwebAccountsCubiForm() {
           id="type"
           className="w-1/2"
           name="type"
+          value={formState.type}
           options={SEARCH_TYPE}
           onChange={handleChange}
         />
