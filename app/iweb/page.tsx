@@ -1,4 +1,5 @@
 import { IwebAccountsCard } from "@/components/iweb/accounts/iweb-accounts-card";
+import { IwebAccountsCubiForm } from "@/components/iweb/accounts/iweb-accounts-cubi-form";
 import { IwebAccountsGMForm } from "@/components/iweb/accounts/iweb-accounts-gm-form";
 
 export default function IwebHome() {
@@ -13,7 +14,7 @@ export default function IwebHome() {
       <IwebAccountsCard
         title="Начислить золото"
       >
-        <form></form>
+        <IwebAccountsCubiForm />
       </IwebAccountsCard>
 
       <IwebAccountsCard

@@ -22,10 +22,10 @@ export default function Home() {
   const formRef = useRef<HTMLFormElement | null>(null);
 
   useEffect(() => {
-    if (state.success) {
+    if (state?.success) {
       formRef.current?.reset();
     }
-  }, [state.success]);
+  }, [state?.success]);
 
   return (
     <form
